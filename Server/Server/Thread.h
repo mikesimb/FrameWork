@@ -4,8 +4,6 @@
 
 #define MAX_WAIT_FOR_TIME 6000;
 
-namespace TheOne
-{
    
    const size_t THREAD_INFO_LEN = 32;
 
@@ -38,7 +36,7 @@ protected:
 	BOOL Terminated(void);
 
    //执行过程
-    virtual void Execute(void) = 0 ;
+	virtual void Execute(void) {} ;
    //终止事件
 	virtual void OnTerminate(void) { } ;
 
@@ -56,5 +54,4 @@ private:
 
 
 
-};
 };

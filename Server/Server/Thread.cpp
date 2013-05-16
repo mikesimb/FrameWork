@@ -2,8 +2,6 @@
 #include "Thread.h"
 #include <Process.h>
 
-namespace TheOne
-{
 	CThread::CThread(void)
 	{
 		m_dwThreadID = 0 ;
@@ -135,4 +133,3 @@ namespace TheOne
 	   
 	}
 
-}

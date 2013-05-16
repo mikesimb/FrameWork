@@ -4,6 +4,7 @@
 
 CIOCPSocket::CIOCPSocket(void)
 {
+	m_AcceptThread = NULL;
 }
 
 
@@ -63,6 +64,7 @@ bool CIOCPSocket::InitListenSocket()
 		OutputDebugString(L"Bind is Failed!");
 		return false;
 	}
+	m_AcceptThread = new CAcceptThread(this);
 
 	//接下来的listen 和ACCEPT函数的执行都可以放到线程中去执行如果这个放到线程中去执行了，那么还需要跟当前的CreateIoCompletionPort绑定吗?
 
@@ -73,6 +75,22 @@ bool CIOCPSocket::InitListenSocket()
 	return true;
 
 
+
+}
+
+SOCKET CIOCPSocket::GetIOCPSocket()
+{
+	return m_listensocket;
+}
+
+bool CIOCPSocket::Init()
+{
+	if (InitSocketLib())
+		if(	InitCompleteIOCP())
+			if	(InitListenSocket())
+				   return true;
+
+return false;
 
 }
 

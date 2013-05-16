@@ -6,7 +6,7 @@
 #include "Server.h"
 #include "ServerDlg.h"
 #include "afxdialogex.h"
-
+#include "IOCPSocket.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CServerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON1, &CServerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -151,3 +152,13 @@ HCURSOR CServerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CServerDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CIOCPSocket * pIocpsocket = new CIOCPSocket();
+	pIocpsocket->m_iport = 8889 ;
+	pIocpsocket->m_strIpaddress = "192.168.30.126";
+	pIocpsocket->Init();
+}
