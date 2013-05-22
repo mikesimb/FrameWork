@@ -80,7 +80,7 @@
 	void CThread::Terminate( void )
 	{
 		::InterlockedExchange((LONG *)(&m_bTerminated),TRUE);
-		_endthreadex(0);
+		//_endthreadex(0);
 
 		
 	}

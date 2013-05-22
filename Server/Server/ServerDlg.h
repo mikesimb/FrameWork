@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "afxwin.h"
+#include "IOCPSocket.h"
 
 
 // CServerDlg ¶Ô»°¿ò
@@ -31,4 +33,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButton1();
+	void StartServer();
+	void StopServer();
+	CButton m_Button;
+
+	CIOCPSocket * pIocpsocket ;
 };

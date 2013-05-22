@@ -18,19 +18,20 @@ public:
 	bool InitListenSocket();
 	SOCKET GetIOCPSocket();
 
+	bool CloseListenSocket();
+
 	bool Init();
 	//本地服务器的IP；
 	CStringA m_strIpaddress;
 	//本地服务器的端口号；
 	int   m_iport;    
+	bool m_bActived;
 protected:
 
 
 private:
 	//这个是监听用的SOCKET;
 	SOCKET m_listensocket;
-
-
 	HANDLE  m_IOCPHandle;
     sockaddr_in m_listensockaddr; 
 	CAcceptThread * m_AcceptThread;

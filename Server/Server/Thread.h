@@ -27,7 +27,7 @@ public:
 	//µÈ´ýÏß³Ì
 	void WaitFor(const DWORD dwTimeOut /*= MAX_WAIT_FOR_TIME*/);
 
-	const char * getThreadID() {return (char *) m_dwThreadID;}
+	const DWORD  getThreadID() {return  m_dwThreadID;}
 	const char * getThreadHandle(){ return (char *)m_hThread;}
 
 

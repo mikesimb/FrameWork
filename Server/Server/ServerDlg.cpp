@@ -6,7 +6,6 @@
 #include "Server.h"
 #include "ServerDlg.h"
 #include "afxdialogex.h"
-#include "IOCPSocket.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -57,6 +56,7 @@ CServerDlg::CServerDlg(CWnd* pParent /*=NULL*/)
 void CServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BUTTON1, m_Button);
 }
 
 BEGIN_MESSAGE_MAP(CServerDlg, CDialogEx)
@@ -99,6 +99,7 @@ BOOL CServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	 pIocpsocket = new CIOCPSocket();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -152,13 +153,32 @@ HCURSOR CServerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+void CServerDlg::StartServer()
+{
+	pIocpsocket->m_iport = 8889 ;
+	pIocpsocket->m_strIpaddress = "192.168.30.126";
+	if (pIocpsocket->Init())
+		m_Button.SetWindowTextW(L"停止启动服务");
+}
 
 void CServerDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	CIOCPSocket * pIocpsocket = new CIOCPSocket();
-	pIocpsocket->m_iport = 8889 ;
-	pIocpsocket->m_strIpaddress = "192.168.30.126";
-	pIocpsocket->Init();
+	if (pIocpsocket)
+		if(pIocpsocket->m_bActived)
+			StopServer();
+		else
+		{
+			StartServer();
+		}
+}
+
+void CServerDlg::StopServer()
+{
+	if (!pIocpsocket)
+		return ;
+	pIocpsocket->CloseListenSocket();
+	if (!pIocpsocket->m_bActived)
+	m_Button.SetWindowTextW(L"启动服务");
+
 }

@@ -1,10 +1,19 @@
 #include "StdAfx.h"
 #include "IOCPSocket.h"
 
+// 释放指针宏
+#define RELEASE(x)                      {if(x != NULL ){delete x;x=NULL;}}
+// 释放句柄宏
+#define RELEASE_HANDLE(x)               {if(x != NULL && x!=INVALID_HANDLE_VALUE){ CloseHandle(x);x = NULL;}}
+// 释放Socket宏
+#define RELEASE_SOCKET(x)               {if(x !=INVALID_SOCKET) { closesocket(x);x=INVALID_SOCKET;}}
+
+
 
 CIOCPSocket::CIOCPSocket(void)
 {
 	m_AcceptThread = NULL;
+	m_bActived = false;
 }
 
 
@@ -46,13 +55,13 @@ bool CIOCPSocket::InitListenSocket()
 		OutputDebugString(L"WSASocket is Failed!");
 		return false;
 	}
-	//将listensokcet 和IOCP绑定在一起
-	HANDLE temp = CreateIoCompletionPort((HANDLE)m_listensocket,m_IOCPHandle,(DWORD)this,0);
-	if(temp == NULL)
-	{
-		OutputDebugString(L"绑定 Listen Socket至完成端口失败！");
-		return false;
-	}
+// 	//将listensokcet 和IOCP绑定在一起
+// 	HANDLE temp = CreateIoCompletionPort((HANDLE)m_listensocket,m_IOCPHandle,(DWORD)this,0);
+// 	if(temp == NULL)
+// 	{
+// 		OutputDebugString(L"绑定 Listen Socket至完成端口失败！");
+// 		return false;
+// 	}
 
 	ZeroMemory(&m_listensockaddr,sizeof(sockaddr_in));
 
@@ -65,6 +74,8 @@ bool CIOCPSocket::InitListenSocket()
 		return false;
 	}
 	m_AcceptThread = new CAcceptThread(this);
+	m_AcceptThread->Start(true);
+	m_AcceptThread->Resume();
 
 	//接下来的listen 和ACCEPT函数的执行都可以放到线程中去执行如果这个放到线程中去执行了，那么还需要跟当前的CreateIoCompletionPort绑定吗?
 
@@ -88,10 +99,87 @@ bool CIOCPSocket::Init()
 	if (InitSocketLib())
 		if(	InitCompleteIOCP())
 			if	(InitListenSocket())
-				   return true;
+			{
+				m_bActived = true; 
+				return true;
+
+			}
 
 return false;
 
+}
+
+bool CIOCPSocket::CloseListenSocket()
+{
+	if( m_listensocket!=INVALID_SOCKET )
+	{
+		// 激活关闭消息通知
+		//SetEvent(m_hShutdownEvent);
+
+// 		for (int i = 0; i < m_nThreads; i++)
+// 		{
+// 			// 通知所有的完成端口操作退出
+// 			PostQueuedCompletionStatus(m_hIOCompletionPort, 0, (DWORD)EXIT_CODE, NULL);
+// 		}
+
+		// 等待所有的客户端资源退出
+		closesocket(m_listensocket);
+		m_AcceptThread->Terminate();
+		
+		WaitForSingleObject((HANDLE)m_AcceptThread->getThreadID(),INFINITE);
+		//RELEASE_SOCKET(m_listensocket);
+		//WaitForMultipleObjects(m_nThreads, m_phWorkerThreads, TRUE, INFINITE);
+
+		// 清除客户端列表信息
+		//this->_ClearContextList();
+
+		// 删除客户端列表的互斥量
+		//DeleteCriticalSection(&m_csContextList);
+
+		// 关闭系统退出事件句柄
+	//	RELEASE_HANDLE(m_hShutdownEvent);
+
+		// 释放工作者线程句柄指针
+// 		for( int i=0;i<m_nThreads;i++ )
+// 		{
+// 			RELEASE_HANDLE(m_phWorkerThreads[i]);
+// 		}
+		// 删除客户端列表的互斥量
+//		DeleteCriticalSection(&m_csContextList);
+
+		// 关闭系统退出事件句柄
+	//	RELEASE_HANDLE(m_hShutdownEvent);
+
+		// 释放工作者线程句柄指针
+// 		for( int i=0;i<m_nThreads;i++ )
+// 		{
+// 			RELEASE_HANDLE(m_phWorkerThreads[i]);
+// 		}
+
+// 		RELEASE(m_phWorkerThreads);
+
+		// 关闭IOCP句柄
+// 		RELEASE_HANDLE(m_hIOCompletionPort);
+
+		// 关闭监听Socket
+// 		RELEASE(m_pListenContext);
+
+// 		this->_ShowMessage("释放资源完毕.\n");
+// 		RELEASE(m_phWorkerThreads);
+
+		// 关闭IOCP句柄
+// 		RELEASE_HANDLE(m_hIOCompletionPort);
+
+		// 关闭监听Socket
+// 		RELEASE(m_pListenContext);
+// 
+// 		this->_ShowMessage("释放资源完毕.\n");
+// 
+// 		this->_ShowMessage("停止监听\n");
+	}	
+	m_bActived = false;
+
+	return true;
 }
 
 
