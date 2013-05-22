@@ -19,6 +19,9 @@ CIOCPSocket::CIOCPSocket(void)
 
 CIOCPSocket::~CIOCPSocket(void)
 {
+	if (m_AcceptThread)
+	delete(m_AcceptThread);
+	m_AcceptThread = NULL;
 }
 
 bool CIOCPSocket::InitSocketLib()

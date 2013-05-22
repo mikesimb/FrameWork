@@ -37,6 +37,13 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include<stdlib.h>
+#include<crtdbg.h>
+#endif  
+
+
 
 
 

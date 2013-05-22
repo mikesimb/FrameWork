@@ -51,6 +51,11 @@ CServerDlg::CServerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CServerDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+#ifdef _DEBUG 
+	_CrtSetBreakAlloc(221);
+#endif
+	
+
 }
 
 void CServerDlg::DoDataExchange(CDataExchange* pDX)
@@ -64,6 +69,8 @@ BEGIN_MESSAGE_MAP(CServerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CServerDlg::OnBnClickedButton1)
+	ON_WM_CLOSE()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -181,4 +188,23 @@ void CServerDlg::StopServer()
 	if (!pIocpsocket->m_bActived)
 	m_Button.SetWindowTextW(L"启动服务");
 
+}
+
+
+void CServerDlg::OnClose()
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialogEx::OnClose();
+}
+
+
+void CServerDlg::OnDestroy()
+{
+	if(pIocpsocket)
+		delete(pIocpsocket);
+	pIocpsocket = NULL;
+	CDialogEx::OnDestroy();
+
+	// TODO: 在此处添加消息处理程序代码
 }

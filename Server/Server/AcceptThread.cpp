@@ -41,6 +41,8 @@ void CAcceptThread::Execute( void )
 			int BufLen = sizeof(sockaddr) ;
 			SOCKET s =m_IOCPSOCKETSERVER->GetIOCPSocket(); 
 			sock = WSAAccept(s,toaddr,&BufLen,NULL/*这里是一个回调函数*/,(DWORD_PTR)m_IOCPSOCKETSERVER) ;
+
+			delete(toaddr);
 			if (m_bTerminated)
 				return;
 			if (sock == INVALID_SOCKET)
