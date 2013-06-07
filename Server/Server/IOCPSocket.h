@@ -1,11 +1,13 @@
 #pragma once
 #include <WinSock2.h>
 #include "AcceptThread.h"
+#include "WorkThread.h"
+#include <list>
 #pragma comment(lib,"ws2_32.lib")
 
 
 class CAcceptThread;
-
+class WorkThread;
 class CIOCPSocket
 {
 public:
@@ -28,6 +30,9 @@ public:
 	bool m_bActived;
 protected:
 
+	bool InitWorkThread();
+	int _GetNoOfProcessors();
+
 
 private:
 	//这个是监听用的SOCKET;
@@ -35,5 +40,6 @@ private:
 	HANDLE  m_IOCPHandle;
     sockaddr_in m_listensockaddr; 
 	CAcceptThread * m_AcceptThread;
+	CList<WorkThread* > m_WorkThreadList;
 };
 

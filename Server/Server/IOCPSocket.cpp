@@ -8,7 +8,7 @@
 // 释放Socket宏
 #define RELEASE_SOCKET(x)               {if(x !=INVALID_SOCKET) { closesocket(x);x=INVALID_SOCKET;}}
 
-
+#define  WORKER_THREADS_PER_PROCESSOR 2;
 
 CIOCPSocket::CIOCPSocket(void)
 {
@@ -103,6 +103,8 @@ bool CIOCPSocket::Init()
 		if(	InitCompleteIOCP())
 			if	(InitListenSocket())
 			{
+				
+				
 				m_bActived = true; 
 				return true;
 
@@ -130,6 +132,20 @@ bool CIOCPSocket::CloseListenSocket()
 		m_AcceptThread->Terminate();
 		
 		WaitForSingleObject((HANDLE)m_AcceptThread->getThreadID(),INFINITE);
+
+//释放工作线程
+	//	int i ; 
+       while (m_WorkThreadList.GetCount() > 0 )
+	   {
+			WorkThread * Thread = m_WorkThreadList.GetAt(0);
+			if (Thread)
+			{
+				Thread->Terminate();
+				WaitForSingleObject((HANDLE)Thread->getThreadID(),INFINITE);
+			}
+			RELEASE(Thread);
+			m_WorkThreadList.RemoveAt(0);
+	   }
 		//RELEASE_SOCKET(m_listensocket);
 		//WaitForMultipleObjects(m_nThreads, m_phWorkerThreads, TRUE, INFINITE);
 
@@ -183,6 +199,28 @@ bool CIOCPSocket::CloseListenSocket()
 	m_bActived = false;
 
 	return true;
+}
+
+bool CIOCPSocket::InitWorkThread()
+{
+	int num = _GetNoOfProcessors();
+	int processNum = WORKER_THREADS_PER_PROCESSOR;
+	int m_nThreads = (processNum * num);
+	WorkThread * thread = new WorkThread;
+	thread->Start(true);
+	thread->Resume();
+	m_WorkThreadList.InsertAfter(0,thread);
+    return true;
+}
+
+int CIOCPSocket::_GetNoOfProcessors()
+{
+	SYSTEM_INFO si;
+
+	GetSystemInfo(&si);
+
+	return si.dwNumberOfProcessors;
+
 }
 
 
