@@ -104,7 +104,7 @@ bool CIOCPSocket::Init()
 			if	(InitListenSocket())
 			{
 				
-				
+				InitWorkThread();
 				m_bActived = true; 
 				return true;
 
@@ -137,14 +137,16 @@ bool CIOCPSocket::CloseListenSocket()
 	//	int i ; 
        while (m_WorkThreadList.GetCount() > 0 )
 	   {
-			WorkThread * Thread = m_WorkThreadList.GetAt(0);
+			WorkThread * Thread = m_WorkThreadList.GetHead();
 			if (Thread)
 			{
 				Thread->Terminate();
 				WaitForSingleObject((HANDLE)Thread->getThreadID(),INFINITE);
+
 			}
-			RELEASE(Thread);
-			m_WorkThreadList.RemoveAt(0);
+			delete Thread;
+			//RELEASE(Thread);
+			m_WorkThreadList.RemoveHead();
 	   }
 		//RELEASE_SOCKET(m_listensocket);
 		//WaitForMultipleObjects(m_nThreads, m_phWorkerThreads, TRUE, INFINITE);
@@ -205,11 +207,17 @@ bool CIOCPSocket::InitWorkThread()
 {
 	int num = _GetNoOfProcessors();
 	int processNum = WORKER_THREADS_PER_PROCESSOR;
-	int m_nThreads = (processNum * num);
-	WorkThread * thread = new WorkThread;
-	thread->Start(true);
-	thread->Resume();
-	m_WorkThreadList.InsertAfter(0,thread);
+	int m_nThreadnum = (processNum * num);
+    int  i ;
+	for(i =0 ;i<m_nThreadnum;i++)
+	{
+		WorkThread * thread = new WorkThread;
+		thread->Start(true);
+		thread->Resume();
+		
+		m_WorkThreadList.AddHead(thread);
+
+	}
     return true;
 }
 

@@ -53,7 +53,8 @@ CServerDlg::CServerDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 #ifdef _DEBUG 
 	//内存泄露调试方法
-//	_CrtSetBreakAlloc(221);
+	//
+	_CrtSetBreakAlloc(237);
 #endif
 	
 
