@@ -2,6 +2,8 @@
 #include "WorkThread.h"
 
 
+const DWORD SHUTDOWN_FLAG = 0xFFFFFFFF;
+
 WorkThread::WorkThread(void)
 {
 }
@@ -14,8 +16,10 @@ WorkThread::~WorkThread(void)
 void WorkThread::Execute( void )
 {
    DWORD dwBytesTransfered = 0 ;
-   DWORD pSoketContext = 0;
-	OVERLAPPED * pOverlapped = NULL;
+   PULONG_PTR pSoketContext = 0;
+   Block * pOverlapped  = NULL;
+   LPOVERLAPPED * ov = NULL;
+   ov = (LPOVERLAPPED *)pOverlapped;
    if(! m_IOCPSOCKETSERVER->m_bActived)
    {
 	   Sleep(2000);
@@ -24,9 +28,15 @@ while (!m_bTerminated)
 {
 	BOOL bReturn = GetQueuedCompletionStatus((HANDLE)m_IOCPSOCKETSERVER->GetIOCPHandle(),
 		&dwBytesTransfered,
-		(PULONG_PTR)&pSocketContext,
-		&pOverlapped,
+		pSoketContext,
+		ov,
 		INFINITE);
+
+	if ((DWORD)ov == SHUTDOWN_FLAG)
+	{
+		Terminate();
+	}
+
 
 }
 	return;

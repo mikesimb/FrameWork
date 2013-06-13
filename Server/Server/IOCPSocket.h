@@ -4,10 +4,28 @@
 #include "WorkThread.h"
 #include <list>
 #pragma comment(lib,"ws2_32.lib")
+const int  MAX_IOCP_SOCKET_BUF = 8*1024;
 
 
 class CAcceptThread;
 class WorkThread;
+
+typedef  enum SOCKETEVENT
+{
+	seInitIOPort,seInitSocket
+	,seConnect,seDisconnect,
+	seListen,seAccept,
+	seRead,seWrite
+};
+
+typedef struct structBlock
+{
+	OVERLAPPED _overlapped;
+	WSABUF   _wsabuf;
+	SOCKETEVENT _enumSocketEvent;
+	char buf[MAX_IOCP_SOCKET_BUF];
+
+} Block,*pBlock ;
 class CIOCPSocket
 {
 public:

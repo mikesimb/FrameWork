@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AcceptThread.h" />
+    <ClInclude Include="ClientSocket.h" />
     <ClInclude Include="IOCPSocket.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Server.h" />
@@ -120,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AcceptThread.cpp" />
+    <ClCompile Include="ClientSocket.cpp" />
     <ClCompile Include="IOCPSocket.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerDlg.cpp" />
