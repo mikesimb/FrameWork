@@ -19,6 +19,7 @@ public:
 	bool InitCompleteIOCP();
 	bool InitListenSocket();
 	SOCKET GetIOCPSocket();
+	HANDLE GetIOCPHandle();
 
 	bool CloseListenSocket();
 

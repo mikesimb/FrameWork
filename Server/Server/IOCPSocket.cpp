@@ -231,4 +231,10 @@ int CIOCPSocket::_GetNoOfProcessors()
 
 }
 
+HANDLE CIOCPSocket::GetIOCPHandle()
+{
+	return m_IOCPHandle;
+
+}
+
 
