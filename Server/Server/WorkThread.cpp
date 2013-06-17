@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "WorkThread.h"
-
-
-const DWORD SHUTDOWN_FLAG = 0xFFFFFFFF;
-
 WorkThread::WorkThread(void)
 {
 }

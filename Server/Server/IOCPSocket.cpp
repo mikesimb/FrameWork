@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "IOCPSocket.h"
-
+#include "ClientSocket.h"
 // 释放指针宏
 #define RELEASE(x)                      {if(x != NULL ){delete x;x=NULL;}}
 // 释放句柄宏
@@ -234,6 +234,47 @@ int CIOCPSocket::_GetNoOfProcessors()
 HANDLE CIOCPSocket::GetIOCPHandle()
 {
 	return m_IOCPHandle;
+
+}
+
+void CIOCPSocket::AcceptSocket( SOCKET _socket,string ipaddr,int port )
+{
+
+	if (_socket != INVALID_SOCKET)
+	{
+		//这里的基本逻辑是这样的
+		//从客户端连接池里查找看看有没有空的连接
+		//如果没有空的连接那么需要创建一个新的东西
+		CClientSocket * client = new CClientSocket();
+		client->SetSocket(_socket);
+		client->SetIpAddress(ipaddr);
+		client->SetPort(port);
+
+		//添加到activeclientpool里
+
+		if(CreateIoCompletionPort((HANDLE)_socket , m_IOCPHandle , DWORD(client),0) == 0 )
+		{
+			//这里 说明绑定CLIENTScoket失败
+			//如果绑定失败需要关闭客户端
+			//SocketErrorEvent();
+			//client->ForceClose;
+		}
+		else
+		{
+		  // 通知逻辑部分客户端连接成功
+			//并且开始接受数据
+			//client->OnConnectEvent();
+			//client->PrepareRevice();
+
+		}
+
+		
+	}
+	else
+	{
+		OutputDebugString(L"AccpetSocket _socket is Invalid_socket");
+	}
+	
 
 }
 

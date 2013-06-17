@@ -3,8 +3,14 @@
 #include "AcceptThread.h"
 #include "WorkThread.h"
 #include <list>
+#include <string>
+using namespace std;
 #pragma comment(lib,"ws2_32.lib")
 const int  MAX_IOCP_SOCKET_BUF = 8*1024;
+
+const DWORD DISCONNECT_FLAG = 0xFFFFFFFE;
+const DWORD SHUTDOWN_FLAG   = 0xFFFFFFEE;
+
 
 
 class CAcceptThread;
@@ -26,6 +32,17 @@ typedef struct structBlock
 	char buf[MAX_IOCP_SOCKET_BUF];
 
 } Block,*pBlock ;
+
+
+typedef struct SendQueueNode
+{
+	char * szBuf;
+	int       ibuflen;
+	int       iStartPosition;
+    SendQueueNode * Next;
+} *pSendQueueNode;
+
+
 class CIOCPSocket
 {
 public:
@@ -40,6 +57,8 @@ public:
 	HANDLE GetIOCPHandle();
 
 	bool CloseListenSocket();
+
+	void AcceptSocket(SOCKET _socket,string ipaddr,int port);
 
 	bool Init();
 	//本地服务器的IP；
