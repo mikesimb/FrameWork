@@ -6,7 +6,7 @@ CClientSocket::CClientSocket(void)
 {
 	m_socket = INVALID_SOCKET;
 	InitializeCriticalSection(m_SendBufCS);
-	memset(&m_ReviceBuf 0,sizeof(m_ReviceBuf));
+	memset(&m_ReviceBuf, 0,sizeof(m_ReviceBuf));
 	memset(&m_SendBuf ,0 , sizeof(m_SendBuf));
 	m_FirstNode = NULL;
 	m_LastNode = NULL;
