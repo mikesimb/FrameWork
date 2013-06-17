@@ -22,6 +22,7 @@ public:
 	int  ForceClose();
 
 	void ClearSendBuf();
+	void PrepareSend(pBlock block ,int iSendLen);
 	//void ConnectEvent();
 
 	//void  PrepareRevice();

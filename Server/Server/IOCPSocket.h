@@ -4,6 +4,7 @@
 #include "WorkThread.h"
 #include <list>
 #include <string>
+#include <map>
 using namespace std;
 #pragma comment(lib,"ws2_32.lib")
 const int  MAX_IOCP_SOCKET_BUF = 8*1024;
@@ -79,5 +80,7 @@ private:
     sockaddr_in m_listensockaddr; 
 	CAcceptThread * m_AcceptThread;
 	CList<WorkThread* > m_WorkThreadList;
+    map<CClientSocket *,int > m_ClientSocketMap;
+
 };
 

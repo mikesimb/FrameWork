@@ -10,9 +10,6 @@ CClientSocket::CClientSocket(void)
 	memset(&m_SendBuf ,0 , sizeof(m_SendBuf));
 	m_FirstNode = NULL;
 	m_LastNode = NULL;
-
-	
-
 }
 
 
@@ -20,8 +17,6 @@ CClientSocket::~CClientSocket(void)
 {
 	ClearSendBuf();
 	DeleteCriticalSection(m_SendBufCS);
-
-	
 }
 
 void CClientSocket::SetSocket( SOCKET _socket )
@@ -58,7 +53,8 @@ int CClientSocket::ForceClose()
 	if (m_socket != INVALID_SOCKET)
 	{
 		Res = closesocket(m_socket);
-		//CleanBuffer();//清楚发送和接收的BUF;
+		ClearSendBuf();
+		memset(&m_ReviceBuf,0 ,sizeof(m_ReviceBuf));
 		PostQueuedCompletionStatus((HANDLE)m_socket,0,DWORD(this),LPOVERLAPPED(DISCONNECT_FLAG));
 	}
 
@@ -76,6 +72,15 @@ void CClientSocket::ClearSendBuf()
 		delete(Node);
 		Node = NULL;
 	 }
+
+	LeaveCriticalSection(m_SendBufCS);
+
+}
+
+void CClientSocket::PrepareSend(pBlock  block ,int iSendLen)
+{
+
+	EnterCriticalSection(m_SendBufCS);
 
 	LeaveCriticalSection(m_SendBufCS);
 
