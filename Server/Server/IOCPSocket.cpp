@@ -14,6 +14,7 @@ CIOCPSocket::CIOCPSocket(void)
 {
 	m_AcceptThread = NULL;
 	m_bActived = false;
+	
 }
 
 
@@ -214,6 +215,7 @@ bool CIOCPSocket::InitWorkThread()
 		WorkThread * thread = new WorkThread;
 		thread->Start(true);
 		thread->Resume();
+		thread->m_IOCPSOCKETSERVER = this;
 		
 		m_WorkThreadList.AddHead(thread);
 

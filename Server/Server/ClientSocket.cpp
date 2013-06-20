@@ -5,7 +5,7 @@
 CClientSocket::CClientSocket(void)
 {
 	m_socket = INVALID_SOCKET;
-	InitializeCriticalSection(m_SendBufCS);
+	InitializeCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 	memset(&m_ReviceBuf, 0,sizeof(m_ReviceBuf));
 	memset(&m_SendBuf ,0 , sizeof(m_SendBuf));
 	m_FirstNode = NULL;
@@ -16,7 +16,7 @@ CClientSocket::CClientSocket(void)
 CClientSocket::~CClientSocket(void)
 {
 	ClearSendBuf();
-	DeleteCriticalSection(m_SendBufCS);
+	DeleteCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 }
 
 void CClientSocket::SetSocket( SOCKET _socket )
@@ -63,7 +63,7 @@ int CClientSocket::ForceClose()
 
 void CClientSocket::ClearSendBuf()
 {
-	EnterCriticalSection(m_SendBufCS);
+	EnterCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 	 while(m_FirstNode != NULL)
 	 {
 		 pSendQueueNode Node  = m_FirstNode;
@@ -73,15 +73,15 @@ void CClientSocket::ClearSendBuf()
 		Node = NULL;
 	 }
 
-	LeaveCriticalSection(m_SendBufCS);
+	LeaveCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 
 }
 
 void CClientSocket::PrepareSend(pBlock  block ,int iSendLen)
 {
 
-	EnterCriticalSection(m_SendBufCS);
+	EnterCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 
-	LeaveCriticalSection(m_SendBufCS);
+	LeaveCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 
 }

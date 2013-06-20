@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "IOCPSocket.h"
+
 using namespace std;
 
 class CClientSocket
@@ -43,7 +44,11 @@ private:
 	 SendQueueNode * m_LastNode;
 
 
-	 LPCRITICAL_SECTION  m_SendBufCS;
+	 //CRITICAL_SECTION  criticalSection
+	 CRITICAL_SECTION  m_SendBufCS;
+
+
+	// LPCRITICAL_SECTION  m_SendBufCS;
 
 
 

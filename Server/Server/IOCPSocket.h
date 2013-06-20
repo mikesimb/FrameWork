@@ -17,6 +17,8 @@ const DWORD SHUTDOWN_FLAG   = 0xFFFFFFEE;
 class CAcceptThread;
 class WorkThread;
 
+class CClientSocket;
+
 typedef  enum SOCKETEVENT
 {
 	seInitIOPort,seInitSocket
@@ -67,6 +69,7 @@ public:
 	//本地服务器的端口号；
 	int   m_iport;    
 	bool m_bActived;
+	 list<CClientSocket * > m_ActiveClientMap;
 protected:
 
 	bool InitWorkThread();
@@ -80,7 +83,7 @@ private:
     sockaddr_in m_listensockaddr; 
 	CAcceptThread * m_AcceptThread;
 	CList<WorkThread* > m_WorkThreadList;
-    map<CClientSocket *,int > m_ClientSocketMap;
+   
 
 };
 

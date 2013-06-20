@@ -54,7 +54,7 @@ CServerDlg::CServerDlg(CWnd* pParent /*=NULL*/)
 #ifdef _DEBUG 
 	//内存泄露调试方法
 	//
-	_CrtSetBreakAlloc(237);
+//	_CrtSetBreakAlloc(237);
 #endif
 	
 

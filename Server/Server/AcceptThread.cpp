@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "AcceptThread.h"
+#include "ClientSocket.h"
 
 
 
@@ -59,6 +60,25 @@ void CAcceptThread::Execute( void )
 				
 #endif // DEBUG
 				//下边的过程就是客户端连接上来的存储过程了
+				CClientSocket * client = new CClientSocket();
+				client->SetSocket(sock);
+				char * str;
+				str = inet_ntoa(PSOCKADDR_IN(toaddr)->sin_addr);
+				client->SetIpAddress(str);
+				m_IOCPSOCKETSERVER->m_ActiveClientMap.push_back(client);
+
+				if (CreateIoCompletionPort(sock,m_IOCPSOCKETSERVER->GetIOCPHandle(),ULONG_PTR(client),0) == 0)
+				{
+					//完成端口关联失败
+				}
+				else
+				{
+					//完成端口关联成功
+					//执行接收方法
+
+				}
+
+			
 
 			}
 
