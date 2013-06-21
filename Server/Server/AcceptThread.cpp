@@ -36,13 +36,11 @@ void CAcceptThread::Execute( void )
 			{
 				OutputDebugString(L"listen is Failed!");
 			}
-			sockaddr * toaddr = NULL;
-			toaddr = new sockaddr;
+			SOCKADDR_IN  toaddr ;//= NULL;
 			SOCKET sock = INVALID_SOCKET;
 			int BufLen = sizeof(sockaddr) ;
 			SOCKET s =m_IOCPSOCKETSERVER->GetIOCPSocket(); 
-			sock = WSAAccept(s,toaddr,&BufLen,NULL/*这里是一个回调函数*/,(DWORD_PTR)m_IOCPSOCKETSERVER) ;
-			delete(toaddr);
+			sock = WSAAccept(s,(sockaddr *)&toaddr,&BufLen,NULL/*这里是一个回调函数*/,(DWORD_PTR)m_IOCPSOCKETSERVER) ;
 			if (m_bTerminated)
 				return;
 			if (sock == INVALID_SOCKET)
@@ -60,28 +58,9 @@ void CAcceptThread::Execute( void )
 				
 #endif // DEBUG
 				//下边的过程就是客户端连接上来的存储过程了
-				CClientSocket * client = new CClientSocket();
-				client->SetSocket(sock);
 				char * str;
-				str = inet_ntoa(PSOCKADDR_IN(toaddr)->sin_addr);
-				client->SetIpAddress(str);
-				m_IOCPSOCKETSERVER->m_ActiveClientMap.push_back(client);
-
-				if (CreateIoCompletionPort((HANDLE)sock,m_IOCPSOCKETSERVER->GetIOCPHandle(),ULONG_PTR(client),0) == 0)
-				{
-					//完成端口关联失败
-				}
-				else
-				{
-					//完成端口关联成功
-					//执行接收方法
-					if (client->getSocket() != INVALID_SOCKET)
-					{
-						client->PrepareRecv(client->GetReadBlock());
-					}
-				}
-
-			
+				str = inet_ntoa(toaddr.sin_addr);
+				m_IOCPSOCKETSERVER->AcceptSocket(sock,str,toaddr.sin_port);
 
 			}
 

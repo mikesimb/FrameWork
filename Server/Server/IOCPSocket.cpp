@@ -149,55 +149,6 @@ bool CIOCPSocket::CloseListenSocket()
 			//RELEASE(Thread);
 			m_WorkThreadList.RemoveHead();
 	   }
-		//RELEASE_SOCKET(m_listensocket);
-		//WaitForMultipleObjects(m_nThreads, m_phWorkerThreads, TRUE, INFINITE);
-
-		// 清除客户端列表信息
-		//this->_ClearContextList();
-
-		// 删除客户端列表的互斥量
-		//DeleteCriticalSection(&m_csContextList);
-
-		// 关闭系统退出事件句柄
-	//	RELEASE_HANDLE(m_hShutdownEvent);
-
-		// 释放工作者线程句柄指针
-// 		for( int i=0;i<m_nThreads;i++ )
-// 		{
-// 			RELEASE_HANDLE(m_phWorkerThreads[i]);
-// 		}
-		// 删除客户端列表的互斥量
-//		DeleteCriticalSection(&m_csContextList);
-
-		// 关闭系统退出事件句柄
-	//	RELEASE_HANDLE(m_hShutdownEvent);
-
-		// 释放工作者线程句柄指针
-// 		for( int i=0;i<m_nThreads;i++ )
-// 		{
-// 			RELEASE_HANDLE(m_phWorkerThreads[i]);
-// 		}
-
-// 		RELEASE(m_phWorkerThreads);
-
-		// 关闭IOCP句柄
-// 		RELEASE_HANDLE(m_hIOCompletionPort);
-
-		// 关闭监听Socket
-// 		RELEASE(m_pListenContext);
-
-// 		this->_ShowMessage("释放资源完毕.\n");
-// 		RELEASE(m_phWorkerThreads);
-
-		// 关闭IOCP句柄
-// 		RELEASE_HANDLE(m_hIOCompletionPort);
-
-		// 关闭监听Socket
-// 		RELEASE(m_pListenContext);
-// 
-// 		this->_ShowMessage("释放资源完毕.\n");
-// 
-// 		this->_ShowMessage("停止监听\n");
 	}	
 	m_bActived = false;
 
@@ -247,30 +198,26 @@ void CIOCPSocket::AcceptSocket( SOCKET _socket,string ipaddr,int port )
 		//这里的基本逻辑是这样的
 		//从客户端连接池里查找看看有没有空的连接
 		//如果没有空的连接那么需要创建一个新的东西
-		CClientSocket * client = new CClientSocket();
-		client->SetSocket(_socket);
-		client->SetIpAddress(ipaddr);
-		client->SetPort(port);
+	    	CClientSocket * client = new CClientSocket();
+			client->SetSocket(_socket);				
+			client->SetIpAddress(ipaddr);
+			client->SetPort(port);
+			m_ActiveClientMap.push_back(client);
 
-		//添加到activeclientpool里
-
-		if(CreateIoCompletionPort((HANDLE)_socket , m_IOCPHandle , DWORD(client),0) == 0 )
-		{
-			//这里 说明绑定CLIENTScoket失败
-			//如果绑定失败需要关闭客户端
-			//SocketErrorEvent();
-			//client->ForceClose;
-		}
-		else
-		{
-		  // 通知逻辑部分客户端连接成功
-			//并且开始接受数据
-			//client->OnConnectEvent();
-			//client->PrepareRevice();
-
-		}
-
-		
+			if (CreateIoCompletionPort((HANDLE)_socket,m_IOCPHandle,ULONG_PTR(client),0) == 0)
+			{
+				//完成端口关联失败
+				
+			}
+			else
+			{
+				//完成端口关联成功
+				//执行接收方法
+				if (client->getSocket() != INVALID_SOCKET)
+				{
+					client->PrepareRecv(client->GetReadBlock());
+				}
+			}
 	}
 	else
 	{
