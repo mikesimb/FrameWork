@@ -14,7 +14,7 @@ void WorkThread::Execute( void )
 {
    DWORD dwBytesTransfered = 0 ;
    CClientSocket *  pSoketContext =new CClientSocket();//NULL;
-   pBlock  ov = new Block ;
+   pBlock  ov =NULL ;
 
    if(! m_IOCPSOCKETSERVER->m_bActived)
    {
@@ -25,7 +25,7 @@ while (!m_bTerminated)
 	BOOL bReturn = GetQueuedCompletionStatus((HANDLE)m_IOCPSOCKETSERVER->GetIOCPHandle(),
 		&dwBytesTransfered,
 		(PULONG_PTR)pSoketContext,
-		(LPOVERLAPPED * )ov,
+		(LPOVERLAPPED * )&ov,
 		INFINITE);
 
 	if ((DWORD)ov == SHUTDOWN_FLAG)
@@ -50,6 +50,13 @@ while (!m_bTerminated)
 	if ((pSoketContext)&&(ov))
 	{
 		OutputDebugString(L"正常读写数据");
+		switch (ov->_enumSocketEvent)
+		{
+		case seRead:
+			pSoketContext->DoClientRead(ov,dwBytesTransfered);
+		default:
+			break;
+		}
 	}
 }
 return;

@@ -280,4 +280,9 @@ void CIOCPSocket::AcceptSocket( SOCKET _socket,string ipaddr,int port )
 
 }
 
+void CIOCPSocket::ClientSocketReviceData( CClientSocket * client ,char * Buf, int Buflen )
+{
+	//这里调用CALLBACK接口的函数
+}
+
 

@@ -85,3 +85,62 @@ void CClientSocket::PrepareSend(pBlock  block ,int iSendLen)
 	LeaveCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
 
 }
+
+void CClientSocket::Close()
+{
+	//if(ForceClose() != 0)
+	//	SoeckErrorEvent();
+	ForceClose();
+}
+
+void CClientSocket::PrepareRecv( pBlock Block )
+{
+
+	DWORD Transfer;
+	DWORD Flage =0 ;
+	Block->_enumSocketEvent = seRead;
+    Block->_wsabuf.len = MAX_IOCP_SOCKET_BUF;
+	Block->_wsabuf.buf = Block->buf;
+	memset(&Block->_overlapped,0,sizeof(Block->_overlapped));
+	if (m_socket != INVALID_SOCKET)
+	{
+		if (WSARecv(m_socket,&Block->_wsabuf,1,&Transfer,&Flage,&Block->_overlapped,NULL)==SOCKET_ERROR)
+		{
+			//说明接收出错
+			DWORD ErrorCode = GetLastError();
+			if (ErrorCode != ERROR_IO_PENDING)
+			{
+				//这里说明socketerror;
+				Close();
+			}
+		}
+	}
+
+
+}
+
+pBlock CClientSocket::GetReadBlock()
+{
+	return &m_ReviceBuf;
+
+}
+
+void CClientSocket::DoClientRead( pBlock Block ,DWORD dwTransfered )
+{
+//	int SendLen = Block->_wsabuf.len - dwTransfered;
+//	if (SendLen == 0)
+//	{
+//		memmove(Block->buf,Block->_wsabuf.buf,SendLen);
+
+//	}
+	if(dwTransfered >0)
+	{
+		OnReviceEvent(this,Block->buf,dwTransfered);
+	}
+	PrepareRecv(Block);
+}
+
+void CClientSocket::OnReviceEvent( CClientSocket * client ,char* Buf, int Buflen )
+{
+	OutputDebugStringA(Buf);
+}

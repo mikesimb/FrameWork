@@ -63,6 +63,9 @@ public:
 
 	void AcceptSocket(SOCKET _socket,string ipaddr,int port);
 
+
+	void ClientSocketReviceData(CClientSocket * client ,char * Buf, int Buflen);
+
 	bool Init();
 	//本地服务器的IP；
 	CStringA m_strIpaddress;
@@ -83,6 +86,8 @@ private:
     sockaddr_in m_listensockaddr; 
 	CAcceptThread * m_AcceptThread;
 	CList<WorkThread* > m_WorkThreadList;
+
+	CRITICAL_SECTION   m_ClientCS;
    
 
 };

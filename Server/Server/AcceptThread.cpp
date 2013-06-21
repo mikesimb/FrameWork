@@ -67,7 +67,7 @@ void CAcceptThread::Execute( void )
 				client->SetIpAddress(str);
 				m_IOCPSOCKETSERVER->m_ActiveClientMap.push_back(client);
 
-				if (CreateIoCompletionPort(sock,m_IOCPSOCKETSERVER->GetIOCPHandle(),ULONG_PTR(client),0) == 0)
+				if (CreateIoCompletionPort((HANDLE)sock,m_IOCPSOCKETSERVER->GetIOCPHandle(),ULONG_PTR(client),0) == 0)
 				{
 					//完成端口关联失败
 				}
@@ -75,7 +75,10 @@ void CAcceptThread::Execute( void )
 				{
 					//完成端口关联成功
 					//执行接收方法
-
+					if (client->getSocket() != INVALID_SOCKET)
+					{
+						client->PrepareRecv(client->GetReadBlock());
+					}
 				}
 
 			

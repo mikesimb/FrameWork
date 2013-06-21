@@ -4,6 +4,9 @@
 
 using namespace std;
 
+
+class ClientSocketCallBack;
+
 class CClientSocket
 {
 public:
@@ -31,7 +34,11 @@ public:
 
 	//void SocketRead();
 
-
+	pBlock GetReadBlock();
+	void PrepareRecv(pBlock Block);
+	void DoClientRead(pBlock Block ,DWORD dwTransfered);
+	void OnReviceEvent(CClientSocket * client ,char* Buf, int Buflen);
+	void Close();
 private:
 	 SOCKET m_socket;
 	 string m_stripAddress;
@@ -48,9 +55,13 @@ private:
 	 CRITICAL_SECTION  m_SendBufCS;
 
 
+
+	
+
 	// LPCRITICAL_SECTION  m_SendBufCS;
 
 
 
 };
+
 
