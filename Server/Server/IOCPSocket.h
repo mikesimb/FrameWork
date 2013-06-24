@@ -89,7 +89,7 @@ private:
 	HANDLE  m_IOCPHandle;
     sockaddr_in m_listensockaddr; 
 	CAcceptThread * m_AcceptThread;
-	CList<WorkThread* > m_WorkThreadList;
+	list<WorkThread* > m_WorkThreadList;
 
 	CRITICAL_SECTION   m_ClientCS;
 

@@ -20,6 +20,9 @@ CIOCPSocket::CIOCPSocket(void)
 
 CIOCPSocket::~CIOCPSocket(void)
 {
+	
+	if (m_bActived) 
+		CloseListenSocket();
 	if (m_AcceptThread)
 	delete(m_AcceptThread);
 	m_AcceptThread = NULL;
@@ -136,22 +139,17 @@ bool CIOCPSocket::CloseListenSocket()
 
 //释放工作线程
 	//	int i ; 
-       while (m_WorkThreadList.GetCount() > 0 )
-	   {
-			WorkThread * Thread = m_WorkThreadList.GetHead();
-			if (Thread)
-			{
-				Thread->Terminate();
-				WaitForSingleObject((HANDLE)Thread->getThreadID(),INFINITE);
-
-			}
-			delete Thread;
-			//RELEASE(Thread);
-			m_WorkThreadList.RemoveHead();
-	   }
-	}	
+      list<WorkThread *>::iterator it ;
+	  for(it = m_WorkThreadList.begin();it != m_WorkThreadList.end();it++)
+	  {
+		  
+		  WorkThread* wt = *it ;
+		  wt->Terminate();
+		  WaitForSingleObject((HANDLE)wt->getThreadID(),INFINITE);
+		  delete wt;
+	  }
 	m_bActived = false;
-
+	}
 	return true;
 }
 
@@ -168,7 +166,7 @@ bool CIOCPSocket::InitWorkThread()
 		thread->Resume();
 		thread->m_IOCPSOCKETSERVER = this;
 		
-		m_WorkThreadList.AddHead(thread);
+		m_WorkThreadList.push_back(thread);
 
 	}
     return true;

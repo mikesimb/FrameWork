@@ -54,7 +54,7 @@ CServerDlg::CServerDlg(CWnd* pParent /*=NULL*/)
 #ifdef _DEBUG 
 	//内存泄露调试方法
 	//
-//	_CrtSetBreakAlloc(237);
+	//_CrtSetBreakAlloc(441);
 #endif
 	
 
@@ -166,7 +166,7 @@ HCURSOR CServerDlg::OnQueryDragIcon()
 void CServerDlg::StartServer()
 {
 	pIocpsocket->m_iport = 8889 ;
-	pIocpsocket->m_strIpaddress = "192.168.30.126";
+	pIocpsocket->m_strIpaddress = "192.168.198.138";
 	if (pIocpsocket->Init())
 		m_Button.SetWindowTextW(L"停止启动服务");
 }

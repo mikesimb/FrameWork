@@ -13,7 +13,7 @@ WorkThread::~WorkThread(void)
 void WorkThread::Execute( void )
 {
    DWORD dwBytesTransfered = 0 ;
-   CClientSocket *  pSoketContext =new CClientSocket();//NULL;
+   CClientSocket *  pSoketContext=NULL;//NULL;
    pBlock  ov =NULL ;
 
    if(! m_IOCPSOCKETSERVER->m_bActived)
@@ -24,7 +24,7 @@ while (!m_bTerminated)
 {
 	BOOL bReturn = GetQueuedCompletionStatus((HANDLE)m_IOCPSOCKETSERVER->GetIOCPHandle(),
 		&dwBytesTransfered,
-		(PULONG_PTR)pSoketContext,
+		(PULONG_PTR)&pSoketContext,
 		(LPOVERLAPPED * )&ov,
 		INFINITE);
 
@@ -54,8 +54,10 @@ while (!m_bTerminated)
 		{
 		case seRead:
 			pSoketContext->DoClientRead(ov,dwBytesTransfered);
+			break;
 		case seWrite:
 			pSoketContext->DoClientWrite(ov,dwBytesTransfered);
+			break;
 		default:
 			break;
 		}

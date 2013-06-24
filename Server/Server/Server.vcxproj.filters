@@ -22,6 +22,7 @@
     <None Include="res\Server.ico">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h">
@@ -42,6 +43,18 @@
     <ClInclude Include="IOCPSocket.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AcceptThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSocket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Server.cpp">
@@ -54,6 +67,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="IOCPSocket.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AcceptThread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSocket.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkThread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
