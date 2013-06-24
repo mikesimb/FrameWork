@@ -54,6 +54,8 @@ while (!m_bTerminated)
 		{
 		case seRead:
 			pSoketContext->DoClientRead(ov,dwBytesTransfered);
+		case seWrite:
+			pSoketContext->DoClientWrite(ov,dwBytesTransfered);
 		default:
 			break;
 		}

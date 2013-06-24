@@ -80,9 +80,58 @@ void CClientSocket::ClearSendBuf()
 void CClientSocket::PrepareSend(pBlock  block ,int iSendLen)
 {
 
-	EnterCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
+	EnterCriticalSection(&m_SendBufCS);
+	m_bSending = false;
+	while(m_FirstNode)
+	{
+		SendQueueNode *node = m_FirstNode;
+		int iRemainLen = MAX_IOCP_SOCKET_BUF - iSendLen;
+		int iDataLen = node->ibuflen - node->iStartPosition;
+		if (iDataLen > iRemainLen)
+		{
+			memmove(block->buf+iSendLen,node->szBuf+node->iStartPosition,iRemainLen);
+			iSendLen = MAX_IOCP_SOCKET_BUF;
+			node->iStartPosition += iRemainLen;
+			break;
+		}
+		else
+		{
+			memmove(block->buf+iSendLen,node->szBuf+node->iStartPosition,iDataLen);
+			iSendLen += iDataLen;
+			m_FirstNode = node->Next;
+			if(m_FirstNode == NULL)
+				m_LastNode = NULL;
+			free(node->szBuf);
+			free(node);
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)&m_SendBufCS);
+		}
+	}
+
+	m_iTotleBufLen -= iSendLen;
+	
+	if(iSendLen > 0)
+	{
+		m_bSending =true;
+		block->_enumSocketEvent = seWrite;
+		block->_wsabuf.buf = block->buf;
+		block->_wsabuf.len = iSendLen;
+		memset(&block->_overlapped,0,sizeof(block->_overlapped));
+
+		if (m_socket != INVALID_SOCKET)
+		{
+			DWORD Trasnfer = 0 ;
+			if (WSASend(m_socket,&block->_wsabuf,1,&Trasnfer,0,&block->_overlapped,NULL) == SOCKET_ERROR )
+			{
+				DWORD iError = GetLastError();
+				OnSocketError(iError);
+				Close();
+			}
+
+		}
+
+	}
+
+	LeaveCriticalSection(&m_SendBufCS);
 
 }
 
@@ -111,6 +160,7 @@ void CClientSocket::PrepareRecv( pBlock Block )
 			if (ErrorCode != ERROR_IO_PENDING)
 			{
 				//这里说明socketerror;
+				OnSocketError(ErrorCode);
 				Close();
 			}
 		}
@@ -143,4 +193,70 @@ void CClientSocket::DoClientRead( pBlock Block ,DWORD dwTransfered )
 void CClientSocket::OnReviceEvent( CClientSocket * client ,char* Buf, int Buflen )
 {
 	OutputDebugStringA(Buf);
+	//Sleep(3000);
+	//char * sendBuf = new char[100];
+	//sendBuf = "copy that copy that !!!!";
+	//SendBuf(sendBuf , 20,false);
+	//delete(sendBuf); 
+
 }
+
+
+void CClientSocket::SendBuf( char * Buf, int len, bool FreeAfterSend )
+{
+	//如果长度小于0 或者 SOCKE == invalid_socket那么退出
+	if ((len <= 0 ) || (m_socket==INVALID_SOCKET))
+	{
+		if (FreeAfterSend)
+		{
+			//这里不是用NEW创建的使用MALLOC			
+			free(Buf);
+		}
+
+	}
+	SendQueueNode * node = new SendQueueNode();
+	node->ibuflen = len;
+	node->iStartPosition = 0 ;
+	node->Next = NULL;
+	node->szBuf = (char*)malloc(len);
+	memmove(node->szBuf,Buf,len);
+if (FreeAfterSend)
+	{
+		delete(Buf);
+	}
+	//加入到发送队列里
+	EnterCriticalSection(&m_SendBufCS);
+	m_iTotleBufLen += len;
+	m_iTotleNodeCount += 1;
+	if (m_LastNode)
+	{
+		m_LastNode->Next = node;
+	}
+	if (!m_FirstNode)
+	{
+		m_FirstNode = node;
+	}
+	m_LastNode = node;
+	//if(!m_bSending)
+	{
+		PrepareSend(&m_SendBuf,0);
+	}
+	
+	LeaveCriticalSection(&m_SendBufCS);
+
+}
+
+void CClientSocket::OnSocketError( DWORD ErrorCode )
+{
+
+}
+
+void CClientSocket::DoClientWrite( pBlock Block,DWORD dwTransfered )
+{
+	int iSendLen = Block->_wsabuf.len - dwTransfered;
+	if (iSendLen>0)
+		memmove(Block->buf+dwTransfered,Block->buf,iSendLen);
+    PrepareSend(Block,iSendLen);
+}
+
+

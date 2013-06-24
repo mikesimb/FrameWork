@@ -207,6 +207,8 @@ void CIOCPSocket::AcceptSocket( SOCKET _socket,string ipaddr,int port )
 			if (CreateIoCompletionPort((HANDLE)_socket,m_IOCPHandle,ULONG_PTR(client),0) == 0)
 			{
 				//完成端口关联失败
+				//int  ErrorCode = GetLastError();
+				//SocketError()
 				
 			}
 			else
@@ -230,6 +232,19 @@ void CIOCPSocket::AcceptSocket( SOCKET _socket,string ipaddr,int port )
 void CIOCPSocket::ClientSocketReviceData( CClientSocket * client ,char * Buf, int Buflen )
 {
 	//这里调用CALLBACK接口的函数
+}
+
+
+void CIOCPSocket::SendBufferForErery()
+{
+   
+	list<CClientSocket *>::iterator it ;
+	for (it = m_ActiveClientMap.begin() ; it != m_ActiveClientMap.end() ;it++)
+	{
+		CClientSocket * client = *it;
+		char buf[] ="我是谁";
+		client->SendBuf(buf,strlen(buf),false);
+	}
 }
 
 

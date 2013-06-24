@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CServerDlg::OnBnClickedButton1)
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON2, &CServerDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -209,4 +210,18 @@ void CServerDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	// TODO: 在此处添加消息处理程序代码
+}
+
+
+void CServerDlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if(pIocpsocket)
+	{
+		pIocpsocket->SendBufferForErery();
+	}
+		
+
+
+
 }

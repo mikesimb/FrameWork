@@ -27,6 +27,7 @@ public:
 
 	void ClearSendBuf();
 	void PrepareSend(pBlock block ,int iSendLen);
+	void SendBuf(char * Buf, int len, bool FreeAfterSend);
 	//void ConnectEvent();
 
 	//void  PrepareRevice();
@@ -37,6 +38,7 @@ public:
 	pBlock GetReadBlock();
 	void PrepareRecv(pBlock Block);
 	void DoClientRead(pBlock Block ,DWORD dwTransfered);
+	void DoClientWrite(pBlock Block,DWORD dwTransfered);
 	void OnReviceEvent(CClientSocket * client ,char* Buf, int Buflen);
 	void Close();
 private:
@@ -49,8 +51,13 @@ private:
 
 	 SendQueueNode * m_FirstNode;
 	 SendQueueNode * m_LastNode;
+	 int m_iTotleNodeCount;
+	 int m_iTotleBufLen;
+
+	 bool m_bSending;
 
 
+	 void OnSocketError(DWORD ErrorCode);
 	 //CRITICAL_SECTION  criticalSection
 	 CRITICAL_SECTION  m_SendBufCS;
 

@@ -64,6 +64,9 @@ public:
 	void AcceptSocket(SOCKET _socket,string ipaddr,int port);
 
 
+	
+
+
 	void ClientSocketReviceData(CClientSocket * client ,char * Buf, int Buflen);
 
 	bool Init();
@@ -73,11 +76,12 @@ public:
 	int   m_iport;    
 	bool m_bActived;
 	 list<CClientSocket * > m_ActiveClientMap;
+	 void SendBufferForErery();
 protected:
 
 	bool InitWorkThread();
 	int _GetNoOfProcessors();
-
+	
 
 private:
 	//这个是监听用的SOCKET;
@@ -88,6 +92,8 @@ private:
 	CList<WorkThread* > m_WorkThreadList;
 
 	CRITICAL_SECTION   m_ClientCS;
+
+	
    
 
 };
